@@ -106,6 +106,7 @@ public class Penguin_Script : MonoBehaviour
         //if the penguin collides with the player
         if (collision.gameObject.name == "Player")
         {
+            Debug.Log("collided with player");
             //has_collided_with_player = true; //sets flag and allows penguin to enter henhouse
 
             ///*
@@ -123,8 +124,9 @@ public class Penguin_Script : MonoBehaviour
         }
 
         //if the penguin collides with the grass
-        if (collision.gameObject.name == "Snow")
+        if (collision.gameObject.name == "Grass")
         {
+            Debug.Log("collided with grass");
             /*
              * penguins move between track one and track two randomly upon colliding with the ground, and 
              * only when they are on track one are they aligned properly to move into the henhouse.
