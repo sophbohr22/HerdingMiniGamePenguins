@@ -50,6 +50,23 @@ public class Penguin_Script : MonoBehaviour
      */
     void Update()
     {
+        /*
+         * this checks which direction the penguin is currently moving, and rotates the penguin
+         * accordingly so that it is facing the direction it is moving
+         */ 
+        var localVelocity = transform.InverseTransformDirection(penguin.velocity);
+        if (localVelocity.x < 0)
+        {
+            //moving left
+            ResetAnimations();
+            animator.SetBool("walk_left_bool", true);
+        }
+        else
+        {
+            //moving right
+            ResetAnimations();
+            animator.SetBool("walk_right_bool", true);
+        }
 
         /*
          * this check ensures that the velocity of the penguin never exceeds the maximum so that 
@@ -61,27 +78,10 @@ public class Penguin_Script : MonoBehaviour
         }
 
         /*
-         * if the penguin is positioned on or a little in front of the ramp, it will play the
-         * panic animation which also changes the rotation of the penguin to face the henhouse,
-         * this will hopefully cue the user that the penguin is correctly positioned to enter
-         * the henhouse
-         */
-        if (penguin.position.x > 0.0 && OnTrackOne())
-        {
-            //ResetAnimations();
-            //animator.SetBool("panic_bool", true);
-        }
-        else
-        {
-            //animator.SetBool("panic_bool", false);
-            //animator.SetBool("flyagain_bool", true);
-        }
-
-        /*
          * if a penguin goes too far on either side of the screen, a force is added to it to 
          * bounce it back towards the play area to ensure a penguin never goes offscreen.
          */
-        if (penguin.position.x > 6.5f || penguin.position.x < -7.5f)
+        if (penguin.position.x > 6.5f || penguin.position.x < -11.5f)
         {
             //too far right
             if (penguin.position.x > 6.5f && OnTrackTwo())
@@ -90,7 +90,7 @@ public class Penguin_Script : MonoBehaviour
             }
 
             //too far left
-            else if (penguin.position.x < -7.5f)
+            else if (penguin.position.x < -11.5f)
             {
                 Bounce(100.0f, 50.0f, 0.0f);
             }
@@ -102,12 +102,17 @@ public class Penguin_Script : MonoBehaviour
      */
     public void OnCollisionEnter(Collision collision)
     {
+        if(collision.gameObject.name == "Exhibit_Entrance" && has_collided_with_player)
+        {
+            //allows the penguin to enter the snow area because the collision with the invisible wall will be ignored
+            Physics.IgnoreCollision(collision.collider, this.penguin_collider);
+        }
 
         //if the penguin collides with the player
         if (collision.gameObject.name == "Player")
         {
             Debug.Log("collided with player");
-            //has_collided_with_player = true; //sets flag and allows penguin to enter henhouse
+            has_collided_with_player = true; //sets flag and allows penguin to enter henhouse
 
             ///*
             // * only plays the animation 'shout' if the penguin is not in the location where it's
@@ -123,20 +128,21 @@ public class Penguin_Script : MonoBehaviour
             //Bounce(2500.0f, 1000.0f, 0.0f); //bounces the penguin with a substantial amount of force when colliding with the user
         }
 
-        //if the penguin collides with the grass
-        if (collision.gameObject.name == "Grass")
+            //if the penguin collides with the grass
+        if (collision.gameObject.name == "Grass" || collision.gameObject.name == "Sidewalk")
         {
-            Debug.Log("collided with grass");
+            Debug.Log("collided with grass or sidewalk");
             /*
-             * penguins move between track one and track two randomly upon colliding with the ground, and 
-             * only when they are on track one are they aligned properly to move into the henhouse.
+             * penguins move between track one, two and three randomly upon colliding with the ground, and 
+             * only when they are on track one or two are they aligned properly to be affected by the user
              * 
              * from the view of the player, the tracks are the same, since their view is "2D", 
              * so it simply appears that the penguins sometimes are pushed right past the ramp
              * and sometimes they walk up it
              * 
-             * track one: along the line z = -3.0f
+             * track one: along the line z = -7.0f
              * track two: along the line z = -5.0f
+             * track three: along the line z = -3.0f
              */
 
             //sets a random number from 1 (inclusive) to 10 (inclusive)
@@ -149,69 +155,70 @@ public class Penguin_Script : MonoBehaviour
 
             //current number of penguins in game
             int cur_num_penguins = game_runner_script.Get_Num_Penguins();
-
-            /* 
-             * if penguin is on track two and is not further right than where the ramp starts,
-             * this ensures that the penguin will not switch to track two and then get stuck under the ramp
-             */
-            if (OnTrackTwo() && cur_x <= 3.0f)
-            {
-                //if there are fewer than 6 penguins it will go to track one, otherwise 50% of the time penguin will switch
-                if (cur_num_penguins < 6 || rand <= 5)
-                {
-                    //penguin switches to track one
-                    penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
-                }
-            }
-
-            /* 
-             * if penguin is on track one and there are more than four penguins currently in the game, this 
-             * ensures that when the game is close to ending the penguins will mostly be oriented to
-             * enter the henhouse
-             */
+            
             if (OnTrackOne())
             {
-                //if there are more than 6 penguins it could switch 50% of the time
-                if (cur_num_penguins > penguin_switch_num && rand <= 5)
+                if(rand <= 3)
                 {
-                    //penguin switches to track two
+                    //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
+                }
+                else if(rand <= 7)
+                {
+                    //switch to track three if there are more than the specified number of penguins
+                    if (cur_num_penguins > penguin_switch_num)
+                    {
+                        penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
+                    }
+                }
+                else if(rand <= 10)
+                {
+                    //stay on track one
                 }
 
             }
-
-            /*
-             * changes the animation of the penguin with each collision with the ground, unless
-             * the penguin is oriented to enter the henhouse, there's a 50% it will play 'pokpok'
-             * and a 50% it will play 'cheer'
-             */
-            if (!animator.GetBool("panic_bool"))
+            else if (OnTrackTwo())
             {
-                ResetAnimations();
-                if (rand <= 5)
+                if (rand <= 3)
                 {
-                    animator.SetBool("pokpok_bool", true);
+                    //switch to track one
+                    penguin.transform.position = new Vector3(cur_x, cur_y, -7.0f);
                 }
-                else
+                else if (rand <= 7)
                 {
-                    animator.SetBool("cheer_bool", true);
+                    //switch to track three if there are more than the specified number of penguins
+                    if (cur_num_penguins > penguin_switch_num)
+                    {
+                        penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
+                    }
                 }
+                else if (rand <= 10)
+                {
+                    //stay on track two
+                }
+
+            }
+            else if (OnTrackThree())
+            {
+                if (rand <= 3)
+                {
+                    //switch to track one
+                    penguin.transform.position = new Vector3(cur_x, cur_y, -7.0f);
+                }
+                else if (rand <= 7)
+                {
+                    //switch to track two
+                    penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
+                }
+                else if (rand <= 10)
+                {
+                    //stay on track three
+                }
+
             }
 
             float rand_y; //the new value for the y of the penguin
-
-            int bounce_rand = RandomNum(); //random num for bounce from 1 (inclusive) to 10 (inclusive)
-
-            //90% of the time, the penguin will bounce at a smaller interval, between 50 and 250
-            if (bounce_rand <= 9)
-            {
-                rand_y = Random.Range(250.0f, 400.0f);
-            }
-            //10% of the time, the penguin will bounce at a larger interval, between 250 and 600
-            else
-            {
-                rand_y = Random.Range(400.0f, 800.0f);
-            }
+            rand_y = Random.Range(100.0f, 200.0f);
 
             //50% of the time, the penguin will bounce to the right
             if (rand <= 5)
@@ -265,6 +272,10 @@ public class Penguin_Script : MonoBehaviour
      */ 
     public void ResetAnimations()
     {
+        animator.SetBool("walk_left_bool", false);
+        animator.SetBool("walk_right_bool", false);
+        animator.SetBool("run_bool", false);
+
         return;
     }
 
@@ -289,7 +300,7 @@ public class Penguin_Script : MonoBehaviour
      */ 
     public bool OnTrackOne()
     {
-        if (penguin.position.z == -3.0)
+        if (penguin.position.z == -7.0)
         {
             return true;
         }
@@ -308,6 +319,24 @@ public class Penguin_Script : MonoBehaviour
     public bool OnTrackTwo()
     {
         if (penguin.position.z == -5.0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /*
+     * Checks which track the penguin is currently on and returns a boolean
+     * based on that
+     * 
+     * @return whether the penguin is on track three or not
+     */
+    public bool OnTrackThree()
+    {
+        if (penguin.position.z == -3.0)
         {
             return true;
         }
