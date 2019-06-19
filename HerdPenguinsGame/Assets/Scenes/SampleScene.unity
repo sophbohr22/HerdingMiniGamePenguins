@@ -622,7 +622,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd20495687d3d646974e906c813f767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num_penguins: 2
+  num_penguins: 3
 --- !u!4 &174246771
 Transform:
   m_ObjectHideFlags: 0
@@ -652,9 +652,16 @@ Animation:
   m_GameObject: {fileID: 188476271}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 6da6a8ec7d36b4c43986838421499737, type: 2}
-  m_Animations: []
-  m_WrapMode: 0
+  m_Animation: {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
+  - {fileID: 7400000, guid: 422efa12b28a4a44db80065d0a16e862, type: 2}
+  - {fileID: 7400000, guid: 91d1f17a6e1a3a742befdb2c9bb14d64, type: 2}
+  - {fileID: 7400000, guid: 83441a7e62d72f8408156e6bd5d843e7, type: 2}
+  - {fileID: 7400000, guid: b6d9f4b8a752069438be0bad8ba36827, type: 2}
+  - {fileID: 7400000, guid: 496434f8893e54441b6afda26ea58e25, type: 2}
+  - {fileID: 7400000, guid: 04ff6e344b0800245a6b5bf656d4c14e, type: 2}
+  m_WrapMode: 2
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0
@@ -923,7 +930,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 222733914}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -16.29, y: 1.5, z: -6.05}
+  m_LocalPosition: {x: -15.91, y: 1.5, z: -6.05}
   m_LocalScale: {x: 1, y: 3, z: 7.8816543}
   m_Children: []
   m_Father: {fileID: 0}
@@ -3444,15 +3451,15 @@ PrefabInstance:
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Animations.Array.data[0]
       value: 
-      objectReference: {fileID: 7400000, guid: e34ff5ba836c9ef40b41163f4b301fe9, type: 2}
+      objectReference: {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Animations.Array.data[3]
       value: 
-      objectReference: {fileID: 7400000, guid: 6da6a8ec7d36b4c43986838421499737, type: 2}
+      objectReference: {fileID: 7400000, guid: 83441a7e62d72f8408156e6bd5d843e7, type: 2}
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Animation
       value: 
-      objectReference: {fileID: 7400000, guid: 422efa12b28a4a44db80065d0a16e862, type: 2}
+      objectReference: {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_CullingType
       value: 0
@@ -3468,11 +3475,15 @@ PrefabInstance:
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Animations.Array.data[5]
       value: 
-      objectReference: {fileID: 7400000, guid: 90d5b99458719c74e91fcf28d8a145a5, type: 2}
+      objectReference: {fileID: 7400000, guid: 496434f8893e54441b6afda26ea58e25, type: 2}
     - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Animations.Array.data[6]
       value: 
       objectReference: {fileID: 7400000, guid: 04ff6e344b0800245a6b5bf656d4c14e, type: 2}
+    - target: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
+      propertyPath: m_WrapMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 13700000, guid: 8d64aa435677a064ca9f3accc6aa6c9f, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -4073,7 +4084,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1570242272}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.5, y: 9, z: -4.8831763}
+  m_LocalPosition: {x: -12.5, y: 9, z: -4.8831763}
   m_LocalScale: {x: 0.25967273, y: 18, z: 10.200861}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5198,12 +5209,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1404015497}
   m_PrefabAsset: {fileID: 0}
---- !u!111 &1821375015 stripped
-Animation:
-  m_CorrespondingSourceObject: {fileID: 11100000, guid: 8d64aa435677a064ca9f3accc6aa6c9f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1404015497}
-  m_PrefabAsset: {fileID: 0}
 --- !u!54 &1821375017
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5212,8 +5217,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1821375014}
   serializedVersion: 2
-  m_Mass: 2.5
-  m_Drag: 0
+  m_Mass: 5
+  m_Drag: 0.5
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -5266,7 +5271,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   penguin_switch_num: 0
-  anim: {fileID: 1821375015}
+  idle_left: {fileID: 0}
+  idle_right: {fileID: 0}
+  walk_left: {fileID: 0}
+  walk_right: {fileID: 0}
+  run_back: {fileID: 0}
+  run_left: {fileID: 0}
+  run_right: {fileID: 0}
   animator: {fileID: 0}
   penguin: {fileID: 1821375017}
   player: {fileID: 222733920}
@@ -5803,9 +5814,16 @@ Animation:
   m_GameObject: {fileID: 1940614409}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 6da6a8ec7d36b4c43986838421499737, type: 2}
-  m_Animations: []
-  m_WrapMode: 0
+  m_Animation: {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 8ec384d1e7de20143a16c79700b5bbb2, type: 2}
+  - {fileID: 7400000, guid: 422efa12b28a4a44db80065d0a16e862, type: 2}
+  - {fileID: 7400000, guid: 91d1f17a6e1a3a742befdb2c9bb14d64, type: 2}
+  - {fileID: 7400000, guid: 83441a7e62d72f8408156e6bd5d843e7, type: 2}
+  - {fileID: 7400000, guid: b6d9f4b8a752069438be0bad8ba36827, type: 2}
+  - {fileID: 7400000, guid: 496434f8893e54441b6afda26ea58e25, type: 2}
+  - {fileID: 7400000, guid: 04ff6e344b0800245a6b5bf656d4c14e, type: 2}
+  m_WrapMode: 2
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0
   m_CullingType: 0

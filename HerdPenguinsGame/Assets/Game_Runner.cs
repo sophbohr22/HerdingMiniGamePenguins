@@ -8,10 +8,10 @@ public class Game_Runner : MonoBehaviour
 
     void Start()
     {
-        GameObject g = GameObject.Find("PenguinFBX"); //the prefab for the 'rudy' chicken
+        GameObject g = GameObject.Find("PenguinFBX"); //the prefab for the penguin
         for (int i = 0; i < num_penguins; i++)
         {
-            GameObject c = GameObject.Instantiate(g); //instatiates rudy
+            GameObject c = GameObject.Instantiate(g); //instantiates penguin
             c.name = "Penguin_" + i; //names the penguin object based on its number
         
             /*

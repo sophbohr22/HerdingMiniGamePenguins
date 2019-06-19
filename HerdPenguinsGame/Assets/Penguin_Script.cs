@@ -11,7 +11,13 @@ public class Penguin_Script : MonoBehaviour
      */
     public int penguin_switch_num;
 
-    public Animation anim;
+    public Animation idle_left;
+    public Animation idle_right;
+    public Animation walk_left;
+    public Animation walk_right;
+    public Animation run_back;
+    public Animation run_left;
+    public Animation run_right;
     public Animator animator;
 
     public Rigidbody penguin;
@@ -34,7 +40,15 @@ public class Penguin_Script : MonoBehaviour
         player_script = player.GetComponent<Player_Script>();
 
         penguin = GetComponent<Rigidbody>();
-        anim = gameObject.GetComponent<Animation>();
+
+        //idle_left = gameObject.GetComponent<Animation>();
+        //idle_right = gameObject.GetComponent<Animation>();
+        //walk_left = gameObject.GetComponent<Animation>();
+        //walk_right = gameObject.GetComponent<Animation>();
+        //run_back = gameObject.GetComponent<Animation>();
+        //run_left = gameObject.GetComponent<Animation>();
+        //run_right = gameObject.GetComponent<Animation>();
+
         game_runner_script = FindObjectOfType<Game_Runner>();
         animator = gameObject.GetComponent<Animator>();
         penguin_collider = penguin.GetComponent<Collider>();
@@ -44,39 +58,122 @@ public class Penguin_Script : MonoBehaviour
 
         max_velocity = 7.0f;
         has_collided_with_player = false;
+
+        int rand_idle = Random.Range(0, 1);
+        if (rand_idle == 0)
+        {
+            animator.Play("walk_left");
+        }
+        else
+        {
+            animator.Play("walk_right");
+        }
+
     }
 
+    private void FixedUpdate()
+    {
+        //if (penguin.velocity.y == 0.0f)
+        //{
+        //    Debug.Log("ENTERED");
+        //    ResetAnimations();
+        //    animator.SetBool("idle_left_bool", true);
+        //    time_on_ground++;
+
+        //    if (time_on_ground > 650)
+        //    {
+        //        var local_velocity = transform.InverseTransformDirection(penguin.velocity);
+        //        if (local_velocity.x < 0)
+        //        {
+        //            //moving left
+        //            ResetAnimations();
+        //            animator.SetBool("run_left_bool", true);
+        //            penguin.AddForce(Vector3.forward * 450.0f);
+        //        }
+        //        else
+        //        {
+        //            //moving right
+        //            ResetAnimations();
+        //            animator.SetBool("run_left_bool", true);
+        //            penguin.AddForce(Vector3.forward * 450.0f);
+        //        }
+        //    }
+        //}
+    }
     /*
      * called every frame
      */
     void Update()
     {
+        var local_velocity = transform.InverseTransformDirection(penguin.velocity);
+        
+        if (penguin.velocity.y == 0.0f)
+        {
+            if (local_velocity.x < 0)
+            {
+                //moving left
+                ResetAnimations();
+                animator.SetBool("idle_left_bool", true);
+                time_on_ground++;
+            }
+            else
+            {
+                //moving right
+                ResetAnimations();
+                animator.SetBool("idle_right_bool", true);
+                time_on_ground++;
+            }
+
+            Debug.Log(time_on_ground);
+            if (time_on_ground > 300)
+            {
+                time_on_ground = 0;
+                if (local_velocity.x < 0)
+                {
+                    //moving left
+                    ResetAnimations();
+                    //animator.SetBool("run_left_bool", true);
+                    //animator.SetBool("run_right_bool", true);
+                    animator.Play("run_left");
+                    Bounce(-3000.0f, 0.0f, 0.0f);
+                    StartCoroutine(Delay(4.0f));
+                    //Bounce(3000.0f, 3000.0f, 0.0f);
+                }
+                else
+                {
+                    //moving right
+                    ResetAnimations();
+                    //animator.SetBool("run_left_bool", true);
+                    //animator.SetBool("run_right_bool", true);
+                    animator.Play("run_right");
+                    Bounce(3000.0f, 0.0f, 0.0f);
+                    StartCoroutine(Delay(4.0f));
+                    //Bounce(3000.0f, 3000.0f, 0.0f);
+                }
+            }
+        }
         /*
          * this checks which direction the penguin is currently moving, and rotates the penguin
          * accordingly so that it is facing the direction it is moving
          */
-        var local_velocity = transform.InverseTransformDirection(penguin.velocity);
-        if (local_velocity.x < 0)
-        {
-            //moving left
-            ResetAnimations();
-            Vector3 force = new Vector3(-5.0f, 0.0f, 0.0f);
-            penguin.AddForce(force);
-            animator.SetBool("walk_left_bool", true);
-        }
         else
         {
-            //moving right
-            ResetAnimations();
-            Vector3 force = new Vector3(5.0f, 0.0f, 0.0f);
-            penguin.AddForce(force);
-            animator.SetBool("walk_right_bool", true);
-        }
-
-        if (penguin.velocity.y == 0.0f)
-        {
-            ResetAnimations();
-            animator.SetBool("idle_bool", true);
+            if (local_velocity.x < 0)
+            {
+                //moving left
+                ResetAnimations();
+                //Vector3 force = new Vector3(-5.0f, 0.0f, 0.0f);
+                //penguin.AddForce(force);
+                animator.SetBool("walk_left_bool", true);
+            }
+            else
+            {
+                //moving right
+                ResetAnimations();
+                //Vector3 force = new Vector3(5.0f, 0.0f, 0.0f);
+                //penguin.AddForce(force);
+                animator.SetBool("walk_right_bool", true);
+            }
         }
 
         /*
@@ -92,14 +189,19 @@ public class Penguin_Script : MonoBehaviour
          * if a penguin goes too far on the left, a force is added to it to 
          * bounce it back towards the play area to ensure a penguin never goes offscreen.
          */
-        if (penguin.position.x < -13.5f)
+        if (penguin.position.x < -12.0f)
         {
             //too far left
-            if (penguin.position.x < -13.5f)
+            if (penguin.position.x < -12.0f)
             {
                 Bounce(200.0f, 50.0f, 0.0f);
             }
         }
+    }
+
+    public IEnumerator Delay(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
     }
 
     /*
@@ -116,7 +218,7 @@ public class Penguin_Script : MonoBehaviour
             }
             else
             {
-                Bounce(-300.0f, 4.0f, 0.0f); //FIXME: change nums 
+                Bounce(1000.0f, 4.0f, 0.0f); //FIXME: change nums 
             }
         }
 
@@ -159,19 +261,6 @@ public class Penguin_Script : MonoBehaviour
             int rand = RandomNum();
             var local_velocity = transform.InverseTransformDirection(penguin.velocity);
 
-            if (rand <= 4)
-            {
-                ResetAnimations();
-                if (local_velocity.x < 0)
-                {
-                    animator.SetBool("run_left_bool", true);
-                }
-                else
-                {
-                    animator.SetBool("run_right_bool", true);
-                }
-            }
-
             //variables for the current position of the penguin
             float cur_x = penguin.position.x;
             float cur_y = penguin.position.y;
@@ -182,22 +271,10 @@ public class Penguin_Script : MonoBehaviour
 
             if (OnTrackOne())
             {
-                if (rand <= 3)
+                if (rand <= 5)
                 {
                     //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
-                }
-                else if (rand <= 7)
-                {
-                    //switch to track three if there are more than the specified number of penguins
-                    if (cur_num_penguins > penguin_switch_num)
-                    {
-                        penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
-                    }
-                }
-                else if (rand <= 10)
-                {
-                    //stay on track one
                 }
 
             }
@@ -216,29 +293,14 @@ public class Penguin_Script : MonoBehaviour
                         penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
                     }
                 }
-                else if (rand <= 10)
-                {
-                    //stay on track two
-                }
-
             }
             else if (OnTrackThree())
             {
-                if (rand <= 3)
-                {
-                    //switch to track one
-                    penguin.transform.position = new Vector3(cur_x, cur_y, -7.0f);
-                }
-                else if (rand <= 7)
+                if (rand <= 5)
                 {
                     //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
                 }
-                else if (rand <= 10)
-                {
-                    //stay on track three
-                }
-
             }
 
             float rand_y; //the new value for the y of the penguin
@@ -261,16 +323,17 @@ public class Penguin_Script : MonoBehaviour
         if (collision.gameObject.tag == "Penguin_Tag")
         {
             int rand_num = RandomNum();
-            if(rand_num <= 5)
+            if (rand_num <= 5)
             {
                 Bounce(400.0f, 25.0f, 0.0f);
-            } else
+            }
+            else
             {
                 Bounce(-400.0f, 25.0f, 0.0f);
             }
         }
 
-        if(collision.gameObject.name == "Snow")
+        if (collision.gameObject.name == "Snow")
         {
             Debug.Log("hit the snow");
             if (!has_entered_exhibit)
@@ -322,7 +385,8 @@ public class Penguin_Script : MonoBehaviour
         animator.SetBool("run_left_bool", false);
         animator.SetBool("run_right_bool", false);
         animator.SetBool("run_back_bool", false);
-        animator.SetBool("idle_bool", false);
+        animator.SetBool("idle_left_bool", false);
+        animator.SetBool("idle_right_bool", false);
 
         return;
     }
