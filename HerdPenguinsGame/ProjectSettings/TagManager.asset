@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Penguin_Tag
+  - Ground_Tag
   layers:
   - Default
   - TransparentFX

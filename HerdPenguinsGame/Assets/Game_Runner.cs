@@ -18,7 +18,7 @@ public class Game_Runner : MonoBehaviour
              * places all of the penguins in random start locations in the game area, ensures they
              * won't spawn in a location outside of view
              */ 
-            float y_val = Random.Range(1.0f, 4.0f);
+            float y_val = Random.Range(1.0f, 1.5f);
             float z_val;
             float x_val;
 

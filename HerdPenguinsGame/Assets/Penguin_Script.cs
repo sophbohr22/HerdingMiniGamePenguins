@@ -4,7 +4,7 @@ using UnityEngine;
 public class Penguin_Script : MonoBehaviour
 {
     //difficulty settings
-    
+
     /* penguin_switch_num: this is the minimum number of penguins left in the game 
      * where switching to track two is allowed, when it is less than this, once a 
      * penguin is on track one it will never go to track two again
@@ -20,6 +20,7 @@ public class Penguin_Script : MonoBehaviour
 
     public float max_velocity;
     public bool has_collided_with_player;
+    public bool has_entered_exhibit;
     public int num_switches;
     public float time_on_ground;
 
@@ -32,7 +33,7 @@ public class Penguin_Script : MonoBehaviour
         //initializes all of the variables that are used during execution
         player_script = player.GetComponent<Player_Script>();
 
-        penguin = GetComponent<Rigidbody>(); 
+        penguin = GetComponent<Rigidbody>();
         anim = gameObject.GetComponent<Animation>();
         game_runner_script = FindObjectOfType<Game_Runner>();
         animator = gameObject.GetComponent<Animator>();
@@ -41,7 +42,7 @@ public class Penguin_Script : MonoBehaviour
         penguin.useGravity = true;
         penguin.isKinematic = false;
 
-        max_velocity = 10.0f;
+        max_velocity = 7.0f;
         has_collided_with_player = false;
     }
 
@@ -53,19 +54,29 @@ public class Penguin_Script : MonoBehaviour
         /*
          * this checks which direction the penguin is currently moving, and rotates the penguin
          * accordingly so that it is facing the direction it is moving
-         */ 
-        var localVelocity = transform.InverseTransformDirection(penguin.velocity);
-        if (localVelocity.x < 0)
+         */
+        var local_velocity = transform.InverseTransformDirection(penguin.velocity);
+        if (local_velocity.x < 0)
         {
             //moving left
             ResetAnimations();
+            Vector3 force = new Vector3(-5.0f, 0.0f, 0.0f);
+            penguin.AddForce(force);
             animator.SetBool("walk_left_bool", true);
         }
         else
         {
             //moving right
             ResetAnimations();
+            Vector3 force = new Vector3(5.0f, 0.0f, 0.0f);
+            penguin.AddForce(force);
             animator.SetBool("walk_right_bool", true);
+        }
+
+        if (penguin.velocity.y == 0.0f)
+        {
+            ResetAnimations();
+            animator.SetBool("idle_bool", true);
         }
 
         /*
@@ -78,21 +89,15 @@ public class Penguin_Script : MonoBehaviour
         }
 
         /*
-         * if a penguin goes too far on either side of the screen, a force is added to it to 
+         * if a penguin goes too far on the left, a force is added to it to 
          * bounce it back towards the play area to ensure a penguin never goes offscreen.
          */
-        if (penguin.position.x > 6.5f || penguin.position.x < -11.5f)
+        if (penguin.position.x < -13.5f)
         {
-            //too far right
-            if (penguin.position.x > 6.5f && OnTrackTwo())
-            {
-                Bounce(-300.0f, 75.0f, 0.0f);
-            }
-
             //too far left
-            else if (penguin.position.x < -11.5f)
+            if (penguin.position.x < -13.5f)
             {
-                Bounce(100.0f, 50.0f, 0.0f);
+                Bounce(200.0f, 50.0f, 0.0f);
             }
         }
     }
@@ -102,16 +107,22 @@ public class Penguin_Script : MonoBehaviour
      */
     public void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.name == "Exhibit_Entrance" && has_collided_with_player)
+        if (collision.gameObject.name == "Exhibit_Entrance")
         {
-            //allows the penguin to enter the snow area because the collision with the invisible wall will be ignored
-            Physics.IgnoreCollision(collision.collider, this.penguin_collider);
+            if (has_collided_with_player)
+            {
+                //allows the penguin to enter the snow area because the collision with the invisible wall will be ignored
+                Physics.IgnoreCollision(collision.collider, this.penguin_collider);
+            }
+            else
+            {
+                Bounce(-300.0f, 4.0f, 0.0f); //FIXME: change nums 
+            }
         }
 
         //if the penguin collides with the player
         if (collision.gameObject.name == "Player")
         {
-            Debug.Log("collided with player");
             has_collided_with_player = true; //sets flag and allows penguin to enter henhouse
 
             ///*
@@ -128,10 +139,9 @@ public class Penguin_Script : MonoBehaviour
             //Bounce(2500.0f, 1000.0f, 0.0f); //bounces the penguin with a substantial amount of force when colliding with the user
         }
 
-            //if the penguin collides with the grass
-        if (collision.gameObject.name == "Grass" || collision.gameObject.name == "Sidewalk")
+        //if the penguin collides with the grass
+        if (collision.gameObject.tag == "Ground_Tag")
         {
-            Debug.Log("collided with grass or sidewalk");
             /*
              * penguins move between track one, two and three randomly upon colliding with the ground, and 
              * only when they are on track one or two are they aligned properly to be affected by the user
@@ -147,6 +157,20 @@ public class Penguin_Script : MonoBehaviour
 
             //sets a random number from 1 (inclusive) to 10 (inclusive)
             int rand = RandomNum();
+            var local_velocity = transform.InverseTransformDirection(penguin.velocity);
+
+            if (rand <= 4)
+            {
+                ResetAnimations();
+                if (local_velocity.x < 0)
+                {
+                    animator.SetBool("run_left_bool", true);
+                }
+                else
+                {
+                    animator.SetBool("run_right_bool", true);
+                }
+            }
 
             //variables for the current position of the penguin
             float cur_x = penguin.position.x;
@@ -155,15 +179,15 @@ public class Penguin_Script : MonoBehaviour
 
             //current number of penguins in game
             int cur_num_penguins = game_runner_script.Get_Num_Penguins();
-            
+
             if (OnTrackOne())
             {
-                if(rand <= 3)
+                if (rand <= 3)
                 {
                     //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
                 }
-                else if(rand <= 7)
+                else if (rand <= 7)
                 {
                     //switch to track three if there are more than the specified number of penguins
                     if (cur_num_penguins > penguin_switch_num)
@@ -171,7 +195,7 @@ public class Penguin_Script : MonoBehaviour
                         penguin.transform.position = new Vector3(cur_x, cur_y, -3.0f);
                     }
                 }
-                else if(rand <= 10)
+                else if (rand <= 10)
                 {
                     //stay on track one
                 }
@@ -218,39 +242,60 @@ public class Penguin_Script : MonoBehaviour
             }
 
             float rand_y; //the new value for the y of the penguin
-            rand_y = Random.Range(100.0f, 200.0f);
+            rand_y = Random.Range(35.0f, 65.0f);
 
             //50% of the time, the penguin will bounce to the right
             if (rand <= 5)
             {
                 //positive x value means bounce to the right
-                
-                Bounce(500.0f, rand_y, 0.0f);
+                Bounce(300.0f, rand_y, 0.0f);
             }
             //50% of the time, the penguin will bounce to the left
             else
             {
                 //negative x value means bounce to the left
-                Bounce(-500.0f, rand_y, 0.0f);
+                Bounce(-300.0f, rand_y, 0.0f);
+            }
+        }
+
+        if (collision.gameObject.tag == "Penguin_Tag")
+        {
+            int rand_num = RandomNum();
+            if(rand_num <= 5)
+            {
+                Bounce(400.0f, 25.0f, 0.0f);
+            } else
+            {
+                Bounce(-400.0f, 25.0f, 0.0f);
+            }
+        }
+
+        if(collision.gameObject.name == "Snow")
+        {
+            Debug.Log("hit the snow");
+            if (!has_entered_exhibit)
+            {
+                ResetAnimations();
+                animator.SetBool("run_back_bool", true);
             }
         }
 
         //if the penguin collides with the henhouse
         if (collision.gameObject.name == "Henhouse" && OnTrackOne())
         {
-        //    /*
-        //     * only if the penguin has collided with the player already is is able to enter the henhouse
-        //     * and be destroyed, this ensures that the penguins will not enter the henhouse until
-        //     * gameplay has started, and thus gives the actors ample time to set up the scene
-        //     */
-        //    if (has_collided_with_player)
-        //    {
-        //        //destroys the penguin
-        //        Destroy(this.gameObject);
+            //    /*
+            //     * only if the penguin has collided with the player already is is able to enter the henhouse
+            //     * and be destroyed, this ensures that the penguins will not enter the henhouse until
+            //     * gameplay has started, and thus gives the actors ample time to set up the scene
+            //     */
+            //    if (has_collided_with_player)
+            //    {
+            //        //destroys the penguin
+            //        Destroy(this.gameObject);
 
-        //        //decrements the number of penguins in scene
-        //        game_runner_script.Decrement_Num_Penguins();
-        //    }
+            //        //decrements the number of penguins in scene
+            //        game_runner_script.Decrement_Num_Penguins();
+            //    }
         }
     }
 
@@ -269,12 +314,15 @@ public class Penguin_Script : MonoBehaviour
     /*
      * Resets the boolean values for all of the animations and thus causes
      * the animation controller to return to its default state
-     */ 
+     */
     public void ResetAnimations()
     {
         animator.SetBool("walk_left_bool", false);
         animator.SetBool("walk_right_bool", false);
-        animator.SetBool("run_bool", false);
+        animator.SetBool("run_left_bool", false);
+        animator.SetBool("run_right_bool", false);
+        animator.SetBool("run_back_bool", false);
+        animator.SetBool("idle_bool", false);
 
         return;
     }
@@ -286,7 +334,7 @@ public class Penguin_Script : MonoBehaviour
      * @param x x-value
      * @param y y-value
      * @param z z-value
-     */ 
+     */
     public void Bounce(float x, float y, float z)
     {
         penguin.AddForce(x, y, z);
@@ -297,7 +345,7 @@ public class Penguin_Script : MonoBehaviour
      * based on that
      * 
      * @return whether the penguin is on track one or not
-     */ 
+     */
     public bool OnTrackOne()
     {
         if (penguin.position.z == -7.0)

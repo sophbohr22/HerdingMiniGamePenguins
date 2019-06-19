@@ -9,6 +9,6 @@ PhysicMaterial:
   m_Name: Penguin_Physics
   dynamicFriction: 0.6
   staticFriction: 0.6
-  bounciness: 0.5
-  frictionCombine: 1
-  bounceCombine: 2
+  bounciness: 0.9805824
+  frictionCombine: 0
+  bounceCombine: 3
