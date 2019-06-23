@@ -19,6 +19,7 @@ public class Penguin_Script : MonoBehaviour
     public Animation run_left;
     public Animation run_right;
     public Animator animator;
+    public Animation animation;
 
     public Rigidbody penguin;
     public Rigidbody player;
@@ -29,6 +30,7 @@ public class Penguin_Script : MonoBehaviour
     public bool has_entered_exhibit;
     public int num_switches;
     public float time_on_ground;
+    public string direction;
 
     public Player_Script player_script;
     public Game_Runner game_runner_script;
@@ -51,6 +53,7 @@ public class Penguin_Script : MonoBehaviour
 
         game_runner_script = FindObjectOfType<Game_Runner>();
         animator = gameObject.GetComponent<Animator>();
+        animation = gameObject.GetComponent<Animation>();
         penguin_collider = penguin.GetComponent<Collider>();
 
         penguin.useGravity = true;
@@ -58,6 +61,7 @@ public class Penguin_Script : MonoBehaviour
 
         max_velocity = 7.0f;
         has_collided_with_player = false;
+        direction = "";
 
         int rand_idle = Random.Range(0, 1);
         if (rand_idle == 0)
@@ -106,49 +110,49 @@ public class Penguin_Script : MonoBehaviour
     void Update()
     {
         var local_velocity = transform.InverseTransformDirection(penguin.velocity);
-        
         if (penguin.velocity.y == 0.0f)
         {
-            if (local_velocity.x < 0)
+            if (direction == "left")
             {
-                //moving left
-                ResetAnimations();
+                //walking left
+                //ResetAnimations();
                 animator.SetBool("idle_left_bool", true);
+                time_on_ground++;
+            }
+            else if(direction == "right")
+            { 
+                //moving right
+                //ResetAnimations();
+                animator.SetBool("idle_right_bool", true);
                 time_on_ground++;
             }
             else
             {
-                //moving right
-                ResetAnimations();
-                animator.SetBool("idle_right_bool", true);
-                time_on_ground++;
+                Debug.Log("not moving but something shady is going on");
             }
-
-            Debug.Log(time_on_ground);
+            
             if (time_on_ground > 300)
             {
                 time_on_ground = 0;
-                if (local_velocity.x < 0)
+                if (direction == "left")
                 {
                     //moving left
-                    ResetAnimations();
-                    //animator.SetBool("run_left_bool", true);
-                    //animator.SetBool("run_right_bool", true);
-                    animator.Play("run_left");
-                    Bounce(-3000.0f, 0.0f, 0.0f);
-                    StartCoroutine(Delay(4.0f));
-                    //Bounce(3000.0f, 3000.0f, 0.0f);
+                    Debug.Log("bout to run left");
+                    //ResetAnimations();
+                    //Bounce(-9000.0f, 0.0f, 0.0f);
+                    //animator.Play("run_left");
+                    //Bounce(-9000.0f, 0.0f, 0.0f);
+                    StartCoroutine(DelayJumpAfterRun());
                 }
-                else
+                else if(direction == "right")
                 {
                     //moving right
-                    ResetAnimations();
-                    //animator.SetBool("run_left_bool", true);
-                    //animator.SetBool("run_right_bool", true);
-                    animator.Play("run_right");
-                    Bounce(3000.0f, 0.0f, 0.0f);
-                    StartCoroutine(Delay(4.0f));
-                    //Bounce(3000.0f, 3000.0f, 0.0f);
+                    Debug.Log("bout to run right");
+                    //ResetAnimations();
+                    //Bounce(9000.0f, 0.0f, 0.0f);
+                    //animator.Play("run_right");
+                    //Bounce(9000.0f, 0.0f, 0.0f);
+                    StartCoroutine(DelayJumpAfterRun());
                 }
             }
         }
@@ -161,17 +165,15 @@ public class Penguin_Script : MonoBehaviour
             if (local_velocity.x < 0)
             {
                 //moving left
+                direction = "left";
                 ResetAnimations();
-                //Vector3 force = new Vector3(-5.0f, 0.0f, 0.0f);
-                //penguin.AddForce(force);
                 animator.SetBool("walk_left_bool", true);
             }
             else
             {
                 //moving right
+                direction = "right";
                 ResetAnimations();
-                //Vector3 force = new Vector3(5.0f, 0.0f, 0.0f);
-                //penguin.AddForce(force);
                 animator.SetBool("walk_right_bool", true);
             }
         }
@@ -199,9 +201,25 @@ public class Penguin_Script : MonoBehaviour
         }
     }
 
-    public IEnumerator Delay(float seconds)
+    public IEnumerator DelayJumpAfterRun()
     {
-        yield return new WaitForSeconds(seconds);
+        if (direction == "left")
+        {
+            animator.Play("run_left");
+            Bounce(-9000.0f, 0.0f, 0.0f);
+            yield return new WaitForSeconds(1);
+            ResetAnimations();
+            animator.SetBool("walk_left", true);
+        }
+        else
+        {
+            animator.Play("run_right");
+            Bounce(9000.0f, 0.0f, 0.0f);
+            yield return new WaitForSeconds(1);
+            ResetAnimations();
+            animator.SetBool("walk_right", true);
+        }
+        Bounce(0.0f, 4000.0f, 0.0f);
     }
 
     /*
@@ -218,8 +236,13 @@ public class Penguin_Script : MonoBehaviour
             }
             else
             {
-                Bounce(1000.0f, 4.0f, 0.0f); //FIXME: change nums 
+                Bounce(-1000.0f, 4.0f, 0.0f); //FIXME: change nums 
             }
+        }
+
+        if(collision.gameObject.name == "Wall_Left")
+        {
+            Bounce(1000.0f, 4.0f, 0.0f); //FIXME: change nums 
         }
 
         //if the penguin collides with the player
