@@ -27,10 +27,13 @@ public class Penguin_Script : MonoBehaviour
 
     public float max_velocity;
     public bool has_collided_with_player;
-    public bool has_entered_exhibit;
     public int num_switches;
     public float time_on_ground;
     public string direction;
+    public bool is_in_pen;
+    public bool ran_back_already;
+    //public int num_penguins_in_pen;
+    public float timer;
 
     public Player_Script player_script;
     public Game_Runner game_runner_script;
@@ -59,12 +62,16 @@ public class Penguin_Script : MonoBehaviour
         penguin.useGravity = true;
         penguin.isKinematic = false;
 
-        max_velocity = 7.0f;
+        max_velocity = 4.0f;
         has_collided_with_player = false;
         direction = "";
+        is_in_pen = false;
+        ran_back_already = false;
+        penguin_switch_num = 4;
+        timer = 0.0f;
 
-        int rand_idle = Random.Range(0, 1);
-        if (rand_idle == 0)
+        int rand_walk = Random.Range(0, 1);
+        if (rand_walk == 0)
         {
             animator.Play("walk_left");
         }
@@ -72,154 +79,135 @@ public class Penguin_Script : MonoBehaviour
         {
             animator.Play("walk_right");
         }
-
     }
 
-    private void FixedUpdate()
-    {
-        //if (penguin.velocity.y == 0.0f)
-        //{
-        //    Debug.Log("ENTERED");
-        //    ResetAnimations();
-        //    animator.SetBool("idle_left_bool", true);
-        //    time_on_ground++;
-
-        //    if (time_on_ground > 650)
-        //    {
-        //        var local_velocity = transform.InverseTransformDirection(penguin.velocity);
-        //        if (local_velocity.x < 0)
-        //        {
-        //            //moving left
-        //            ResetAnimations();
-        //            animator.SetBool("run_left_bool", true);
-        //            penguin.AddForce(Vector3.forward * 450.0f);
-        //        }
-        //        else
-        //        {
-        //            //moving right
-        //            ResetAnimations();
-        //            animator.SetBool("run_left_bool", true);
-        //            penguin.AddForce(Vector3.forward * 450.0f);
-        //        }
-        //    }
-        //}
-    }
     /*
      * called every frame
      */
     void Update()
     {
+        //num_penguins_in_pen = game_runner_script.Get_Num_Penguins_In_Pen();
         var local_velocity = transform.InverseTransformDirection(penguin.velocity);
-        if (penguin.velocity.y == 0.0f)
+
+        if (ran_back_already)
         {
-            if (direction == "left")
-            {
-                //walking left
-                //ResetAnimations();
-                animator.SetBool("idle_left_bool", true);
-                time_on_ground++;
-            }
-            else if(direction == "right")
-            { 
-                //moving right
-                //ResetAnimations();
-                animator.SetBool("idle_right_bool", true);
-                time_on_ground++;
-            }
-            else
-            {
-                Debug.Log("not moving but something shady is going on");
-            }
-            
-            if (time_on_ground > 300)
-            {
-                time_on_ground = 0;
-                if (direction == "left")
-                {
-                    //moving left
-                    Debug.Log("bout to run left");
-                    //ResetAnimations();
-                    //Bounce(-9000.0f, 0.0f, 0.0f);
-                    //animator.Play("run_left");
-                    //Bounce(-9000.0f, 0.0f, 0.0f);
-                    StartCoroutine(DelayJumpAfterRun());
-                }
-                else if(direction == "right")
-                {
-                    //moving right
-                    Debug.Log("bout to run right");
-                    //ResetAnimations();
-                    //Bounce(9000.0f, 0.0f, 0.0f);
-                    //animator.Play("run_right");
-                    //Bounce(9000.0f, 0.0f, 0.0f);
-                    StartCoroutine(DelayJumpAfterRun());
-                }
-            }
+            Vector3 destination = new Vector3(1.8f, 0.0f, 8.5f);
+            //float time = Time.deltaTime * 5.0f;
+            //ResetAnimations();
+            timer += Time.deltaTime;
+            animator.Play("run_back");
+            animator.SetBool("run_back_bool", true);
+            penguin.transform.position = Vector3.Lerp(penguin.position, destination, 0.075f);
+
+            //if this is entered it means the penguin is already on it's way backward
+            //if (!(penguin.position.z >= 5.0f))
+            //{
+            //    animator.SetBool("run_back_bool", true);
+            //    Debug.Log("coroutine for run back!!");
+            //    StartCoroutine(DelayAfterRunBack());
+            //}
         }
-        /*
-         * this checks which direction the penguin is currently moving, and rotates the penguin
-         * accordingly so that it is facing the direction it is moving
-         */
         else
         {
-            if (local_velocity.x < 0)
+            if (penguin.velocity.y == 0.0f)
             {
-                //moving left
-                direction = "left";
-                ResetAnimations();
-                animator.SetBool("walk_left_bool", true);
+                Debug.Log(penguin.name + " y velocity friggin died");
+                if (direction == "left")
+                {
+                    //walking left
+                    animator.SetBool("idle_left_bool", true);
+                    time_on_ground++;
+                }
+                else if (direction == "right")
+                {
+                    //moving right
+                    animator.SetBool("idle_right_bool", true);
+                    time_on_ground++;
+                }
+
+                Debug.Log(penguin.name + " tog: " + time_on_ground);
+                if (time_on_ground > 130)
+                {
+                    time_on_ground = 0;
+                    if (direction == "left")
+                    {
+                        StartCoroutine(DelayJumpAfterRun());
+                    }
+                    else if (direction == "right")
+                    {
+                        StartCoroutine(DelayJumpAfterRun());
+                    }
+                }
             }
+            /*
+             * this checks which direction the penguin is currently moving, and rotates the penguin
+             * accordingly so that it is facing the direction it is moving
+             */
             else
             {
-                //moving right
-                direction = "right";
-                ResetAnimations();
-                animator.SetBool("walk_right_bool", true);
+                if (local_velocity.x < 0)
+                {
+                    //moving left
+                    direction = "left";
+                    ResetAnimations();
+                    animator.SetBool("walk_left_bool", true);
+                }
+                else
+                {
+                    //moving right
+                    direction = "right";
+                    ResetAnimations();
+                    animator.SetBool("walk_right_bool", true);
+                }
             }
-        }
 
-        /*
-         * this check ensures that the velocity of the penguin never exceeds the maximum so that 
-         * the bouncing never becomes too extreme
-         */
-        if (penguin.velocity.magnitude > max_velocity)
-        {
-            penguin.velocity = max_velocity * penguin.velocity.normalized;
-        }
+            /*
+             * this check ensures that the velocity of the penguin never exceeds the maximum so that 
+             * the bouncing never becomes too extreme
+             */
+            if (penguin.velocity.magnitude > max_velocity)
+            {
+                penguin.velocity = max_velocity * penguin.velocity.normalized;
+            }
 
-        /*
-         * if a penguin goes too far on the left, a force is added to it to 
-         * bounce it back towards the play area to ensure a penguin never goes offscreen.
-         */
-        if (penguin.position.x < -12.0f)
-        {
-            //too far left
+            /*
+             * if a penguin goes too far on the left, a force is added to it to 
+             * bounce it back towards the play area to ensure a penguin never goes offscreen.
+             */
             if (penguin.position.x < -12.0f)
             {
-                Bounce(200.0f, 50.0f, 0.0f);
+                //too far left
+                if (penguin.position.x < -12.0f)
+                {
+                    Bounce(200.0f, 50.0f, 0.0f);
+                }
             }
         }
     }
 
+    /*
+     * This function allows the penguin to jump after performing a slide (run animation)
+     */
     public IEnumerator DelayJumpAfterRun()
     {
         if (direction == "left")
         {
             animator.Play("run_left");
-            Bounce(-9000.0f, 0.0f, 0.0f);
-            yield return new WaitForSeconds(1);
+            Bounce(-900.0f, 0.0f, 0.0f);
+            yield return new WaitForSeconds(0.05f);
             ResetAnimations();
-            animator.SetBool("walk_left", true);
+            animator.SetBool("walk_left_bool", true);
         }
         else
         {
             animator.Play("run_right");
-            Bounce(9000.0f, 0.0f, 0.0f);
-            yield return new WaitForSeconds(1);
+            Bounce(900.0f, 0.0f, 0.0f);
+            yield return new WaitForSeconds(0.05f);
             ResetAnimations();
-            animator.SetBool("walk_right", true);
+            animator.SetBool("walk_right_bool", true);
         }
-        Bounce(0.0f, 4000.0f, 0.0f);
+
+        Bounce(0.0f, 850.0f, 0.0f);
     }
 
     /*
@@ -229,39 +217,106 @@ public class Penguin_Script : MonoBehaviour
     {
         if (collision.gameObject.name == "Exhibit_Entrance")
         {
-            if (has_collided_with_player)
+            if (has_collided_with_player && !is_in_pen)
             {
                 //allows the penguin to enter the snow area because the collision with the invisible wall will be ignored
-                Physics.IgnoreCollision(collision.collider, this.penguin_collider);
+                Physics.IgnoreCollision(collision.collider, this.penguin_collider, true);
             }
             else
             {
-                Bounce(-1000.0f, 4.0f, 0.0f); //FIXME: change nums 
+                Bounce(-300.0f, 4.0f, 0.0f); //FIXME: change nums 
             }
         }
 
         if(collision.gameObject.name == "Wall_Left")
         {
-            Bounce(1000.0f, 4.0f, 0.0f); //FIXME: change nums 
+            penguin.transform.position = new Vector3(transform.position.x, transform.position.y, -3.0f);
+            Bounce(300.0f, 4.0f, 0.0f); //FIXME: change nums 
         }
 
         //if the penguin collides with the player
         if (collision.gameObject.name == "Player")
         {
             has_collided_with_player = true; //sets flag and allows penguin to enter henhouse
+            Bounce(500.0f, 5.0f, 0.0f); //bounces the penguin with a substantial amount of force when colliding with the user
+        }
 
-            ///*
-            // * only plays the animation 'shout' if the penguin is not in the location where it's
-            // * oriented to enter the henhouse (i.e. if it's not currently playing 'panic', thus 
-            // * not altering its new rotation
-            // */
-            //if (!(penguin.position.x > 0.0) && !OnTrackOne())
+        if (collision.gameObject.tag == "Fence_Tag")
+        {
+            Bounce(800.0f, 0.0f, 0.0f);
+        }
+
+        //if the penguin collides with the igloo_entrance
+        if (collision.gameObject.name == "Igloo_Hole")
+        {
+            //destroys the penguin
+            Destroy(this.gameObject);
+
+            //decrements the number of penguins in scene
+            game_runner_script.Decrement_Num_Penguins();
+        }
+
+        if (collision.gameObject.name == "Snow_Back")
+        {
+            //var z_pos = penguin.position.z;
+            //var x_pos = penguin.position.x;
+            //if ((z_pos >= 7.5 && z_pos <= 9.2) && x_pos >= 3.0)
             //{
             //    ResetAnimations();
-            //    animator.SetBool("shout_bool", true);
+            //    animator.Play("run_left");
+            //    animator.SetBool("run_left_bool", true);
             //}
 
-            //Bounce(2500.0f, 1000.0f, 0.0f); //bounces the penguin with a substantial amount of force when colliding with the user
+            //float rand_y; //the new value for the y of the penguin
+            //rand_y = Random.Range(35.0f, 65.0f);
+
+            ////50% of the time, the penguin will bounce to the right
+            //if (RandomNum() <= 5)
+            //{
+            //    //positive x value means bounce to the right
+            //    Bounce(300.0f, rand_y, 0.0f);
+            //}
+            ////50% of the time, the penguin will bounce to the left
+            //else
+            //{
+            //    //negative x value means bounce to the left
+            //    Bounce(-300.0f, rand_y, 0.0f);
+            //}
+        }
+
+        if (collision.gameObject.name == "Snow_Front")
+        {
+            is_in_pen = true;
+
+            if (!ran_back_already)
+            {
+                //sometimes it bounces back, sometimes it bounces left
+                int rand_snow = RandomNum();
+                if (rand_snow <= 2 && penguin.position.x >= 2.5f)
+                {
+                    ran_back_already = true;
+                    //ResetAnimations();
+                    //animator.SetBool("run_back_bool", true);
+                    //StartCoroutine(DelayAfterRunBack());
+                }
+                else
+                {
+                    ResetAnimations();
+                    penguin.transform.position = new Vector3(transform.position.x, transform.position.y, -3.0f);
+                    animator.Play("run_left");
+                    animator.SetBool("run_left_bool", true);
+                    Bounce(-1800.0f, 0.0f, 0.0f);
+                }
+            }
+            //else
+            //{
+            //    //if this is entered it means the penguin is already on it's way backward
+            //    if (!(penguin.position.z >= 5.0f))
+            //    {
+            //        animator.SetBool("run_back_bool", true);
+            //        StartCoroutine(DelayAfterRunBack());
+            //    }
+            //}
         }
 
         //if the penguin collides with the grass
@@ -279,6 +334,7 @@ public class Penguin_Script : MonoBehaviour
              * track two: along the line z = -5.0f
              * track three: along the line z = -3.0f
              */
+            is_in_pen = false;
 
             //sets a random number from 1 (inclusive) to 10 (inclusive)
             int rand = RandomNum();
@@ -299,8 +355,8 @@ public class Penguin_Script : MonoBehaviour
                     //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
                 }
-
             }
+
             else if (OnTrackTwo())
             {
                 if (rand <= 3)
@@ -319,7 +375,7 @@ public class Penguin_Script : MonoBehaviour
             }
             else if (OnTrackThree())
             {
-                if (rand <= 5)
+                if (rand <= 5 || cur_num_penguins <= 4)
                 {
                     //switch to track two
                     penguin.transform.position = new Vector3(cur_x, cur_y, -5.0f);
@@ -330,7 +386,7 @@ public class Penguin_Script : MonoBehaviour
             rand_y = Random.Range(35.0f, 65.0f);
 
             //50% of the time, the penguin will bounce to the right
-            if (rand <= 5)
+            if (RandomNum() <= 5)
             {
                 //positive x value means bounce to the right
                 Bounce(300.0f, rand_y, 0.0f);
@@ -355,36 +411,20 @@ public class Penguin_Script : MonoBehaviour
                 Bounce(-400.0f, 25.0f, 0.0f);
             }
         }
-
-        if (collision.gameObject.name == "Snow")
-        {
-            Debug.Log("hit the snow");
-            if (!has_entered_exhibit)
-            {
-                ResetAnimations();
-                animator.SetBool("run_back_bool", true);
-            }
-        }
-
-        //if the penguin collides with the henhouse
-        if (collision.gameObject.name == "Henhouse" && OnTrackOne())
-        {
-            //    /*
-            //     * only if the penguin has collided with the player already is is able to enter the henhouse
-            //     * and be destroyed, this ensures that the penguins will not enter the henhouse until
-            //     * gameplay has started, and thus gives the actors ample time to set up the scene
-            //     */
-            //    if (has_collided_with_player)
-            //    {
-            //        //destroys the penguin
-            //        Destroy(this.gameObject);
-
-            //        //decrements the number of penguins in scene
-            //        game_runner_script.Decrement_Num_Penguins();
-            //    }
-        }
     }
 
+    public IEnumerator DelayAfterRunBack()
+    {
+        penguin.constraints = RigidbodyConstraints.None;
+        penguin.constraints = RigidbodyConstraints.FreezeRotation;
+        animator.Play("run_back");
+        Bounce(0.0f, 0.0f, 1000.0f);
+        yield return new WaitForSeconds(0.5f);
+        ResetAnimations();
+        animator.SetBool("walk_back_bool", true);
+        animator.Play("walk_back");
+        Bounce(0.0f, 2000.0f, 0.0f);
+    }
 
     /*
      * Generates a random number from 1 (inclusive) to 10 (inclusive)
@@ -405,6 +445,7 @@ public class Penguin_Script : MonoBehaviour
     {
         animator.SetBool("walk_left_bool", false);
         animator.SetBool("walk_right_bool", false);
+        animator.SetBool("walk_back_bool", false);
         animator.SetBool("run_left_bool", false);
         animator.SetBool("run_right_bool", false);
         animator.SetBool("run_back_bool", false);

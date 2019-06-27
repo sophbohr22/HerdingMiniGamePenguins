@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Penguin_Tag
   - Ground_Tag
+  - Fence_Tag
   layers:
   - Default
   - TransparentFX
