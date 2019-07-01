@@ -230,7 +230,7 @@ public class Penguin_Script : MonoBehaviour
 
         if(collision.gameObject.name == "Wall_Left")
         {
-            penguin.transform.position = new Vector3(transform.position.x, transform.position.y, -3.0f);
+            penguin.transform.position = new Vector3(transform.position.x + 2.0f, transform.position.y, -3.0f);
             Bounce(300.0f, 4.0f, 0.0f); //FIXME: change nums 
         }
 
@@ -251,37 +251,36 @@ public class Penguin_Script : MonoBehaviour
         {
             //destroys the penguin
             Destroy(this.gameObject);
-
             //decrements the number of penguins in scene
             game_runner_script.Decrement_Num_Penguins();
         }
 
         if (collision.gameObject.name == "Snow_Back")
         {
-            //var z_pos = penguin.position.z;
-            //var x_pos = penguin.position.x;
-            //if ((z_pos >= 7.5 && z_pos <= 9.2) && x_pos >= 3.0)
-            //{
-            //    ResetAnimations();
-            //    animator.Play("run_left");
-            //    animator.SetBool("run_left_bool", true);
-            //}
+            var z_pos = penguin.position.z;
+            var x_pos = penguin.position.x;
+            if ((z_pos >= 7.5 && z_pos <= 9.2) && x_pos >= 3.0)
+            {
+                ResetAnimations();
+                animator.Play("run_left");
+                animator.SetBool("run_left_bool", true);
+            }
 
-            //float rand_y; //the new value for the y of the penguin
-            //rand_y = Random.Range(35.0f, 65.0f);
+            float rand_y; //the new value for the y of the penguin
+            rand_y = Random.Range(35.0f, 65.0f);
 
-            ////50% of the time, the penguin will bounce to the right
-            //if (RandomNum() <= 5)
-            //{
-            //    //positive x value means bounce to the right
-            //    Bounce(300.0f, rand_y, 0.0f);
-            //}
-            ////50% of the time, the penguin will bounce to the left
-            //else
-            //{
-            //    //negative x value means bounce to the left
-            //    Bounce(-300.0f, rand_y, 0.0f);
-            //}
+            //50% of the time, the penguin will bounce to the right
+            if (RandomNum() <= 5)
+            {
+                //positive x value means bounce to the right
+                Bounce(300.0f, rand_y, 0.0f);
+            }
+            //50% of the time, the penguin will bounce to the left
+            else
+            {
+                //negative x value means bounce to the left
+                Bounce(-300.0f, rand_y, 0.0f);
+            }
         }
 
         if (collision.gameObject.name == "Snow_Front")
@@ -292,12 +291,10 @@ public class Penguin_Script : MonoBehaviour
             {
                 //sometimes it bounces back, sometimes it bounces left
                 int rand_snow = RandomNum();
-                if (rand_snow <= 2 && penguin.position.x >= 2.5f)
+
+                if ((rand_snow <= 3 || game_runner_script.Get_Num_Penguins() < 2) && penguin.position.x >= 2.5f)
                 {
                     ran_back_already = true;
-                    //ResetAnimations();
-                    //animator.SetBool("run_back_bool", true);
-                    //StartCoroutine(DelayAfterRunBack());
                 }
                 else
                 {
@@ -305,18 +302,9 @@ public class Penguin_Script : MonoBehaviour
                     penguin.transform.position = new Vector3(transform.position.x, transform.position.y, -3.0f);
                     animator.Play("run_left");
                     animator.SetBool("run_left_bool", true);
-                    Bounce(-1800.0f, 0.0f, 0.0f);
+                    Bounce(-2000.0f, 5.0f, 0.0f);
                 }
             }
-            //else
-            //{
-            //    //if this is entered it means the penguin is already on it's way backward
-            //    if (!(penguin.position.z >= 5.0f))
-            //    {
-            //        animator.SetBool("run_back_bool", true);
-            //        StartCoroutine(DelayAfterRunBack());
-            //    }
-            //}
         }
 
         //if the penguin collides with the grass

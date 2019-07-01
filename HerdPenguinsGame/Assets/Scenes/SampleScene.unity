@@ -670,7 +670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd20495687d3d646974e906c813f767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num_penguins: 5
+  num_penguins: 12
 --- !u!4 &174246771
 Transform:
   m_ObjectHideFlags: 0
@@ -7157,7 +7157,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!65 &2136591238
 BoxCollider:
   m_ObjectHideFlags: 0
