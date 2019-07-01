@@ -670,7 +670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd20495687d3d646974e906c813f767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num_penguins: 12
+  num_penguins: 15
 --- !u!4 &174246771
 Transform:
   m_ObjectHideFlags: 0
@@ -798,7 +798,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198388487}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.9, y: 9, z: 2.22}
+  m_LocalPosition: {x: 6.2, y: 9, z: 2.22}
   m_LocalScale: {x: 0.25967273, y: 18, z: 25.998936}
   m_Children: []
   m_Father: {fileID: 0}
@@ -5793,26 +5793,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   penguin_switch_num: 0
-  idle_left: {fileID: 0}
-  idle_right: {fileID: 0}
-  walk_left: {fileID: 0}
-  walk_right: {fileID: 0}
-  run_back: {fileID: 0}
-  run_left: {fileID: 0}
-  run_right: {fileID: 0}
   animator: {fileID: 0}
-  animation: {fileID: 0}
   penguin: {fileID: 1821375017}
   player: {fileID: 222733920}
   penguin_collider: {fileID: 0}
   max_velocity: 0
   has_collided_with_player: 0
-  num_switches: 0
   time_on_ground: 0
   direction: 
   is_in_pen: 0
-  ran_back_already: 0
+  sliding_back: 0
   timer: 0
+  cur_num_penguins: 0
   player_script: {fileID: 0}
   game_runner_script: {fileID: 0}
 --- !u!1 &1850246980 stripped

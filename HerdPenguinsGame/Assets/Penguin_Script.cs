@@ -25,6 +25,7 @@ public class Penguin_Script : MonoBehaviour
     public bool is_in_pen;
     public bool sliding_back;
     public float timer;
+    public int cur_num_penguins;
 
     //scripts
     public Player_Script player_script;
@@ -69,6 +70,9 @@ public class Penguin_Script : MonoBehaviour
      */
     void Update()
     {
+        //current number of penguins outside the enclosure
+        cur_num_penguins = game_runner_script.Get_Num_Penguins();
+
         //this is used to check which direction penguin going
         var local_velocity = transform.InverseTransformDirection(penguin.velocity);
 
@@ -381,9 +385,6 @@ public class Penguin_Script : MonoBehaviour
             float cur_x = penguin.position.x;
             float cur_y = penguin.position.y;
             float cur_z = penguin.position.z;
-
-            //current number of penguins outside the enclosure
-            int cur_num_penguins = game_runner_script.Get_Num_Penguins();
 
             if (OnTrackOne())
             {
