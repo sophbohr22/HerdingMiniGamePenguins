@@ -670,7 +670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd20495687d3d646974e906c813f767, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num_penguins: 12
+  num_penguins: 15
 --- !u!4 &174246771
 Transform:
   m_ObjectHideFlags: 0
@@ -798,7 +798,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 198388487}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.9, y: 9, z: 2.22}
+  m_LocalPosition: {x: 6.2, y: 9, z: 2.22}
   m_LocalScale: {x: 0.25967273, y: 18, z: 25.998936}
   m_Children: []
   m_Father: {fileID: 0}
@@ -4547,8 +4547,8 @@ Transform:
   m_Father: {fileID: 1537789336}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -10.65, y: -163.787, z: 90.00001}
---- !u!136 &1617437000
-CapsuleCollider:
+--- !u!64 &1617437000
+MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4557,10 +4557,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1617437001
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5793,26 +5793,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   penguin_switch_num: 0
-  idle_left: {fileID: 0}
-  idle_right: {fileID: 0}
-  walk_left: {fileID: 0}
-  walk_right: {fileID: 0}
-  run_back: {fileID: 0}
-  run_left: {fileID: 0}
-  run_right: {fileID: 0}
   animator: {fileID: 0}
-  animation: {fileID: 0}
   penguin: {fileID: 1821375017}
   player: {fileID: 222733920}
   penguin_collider: {fileID: 0}
   max_velocity: 0
   has_collided_with_player: 0
-  num_switches: 0
   time_on_ground: 0
   direction: 
   is_in_pen: 0
-  ran_back_already: 0
+  sliding_back: 0
   timer: 0
+  cur_num_penguins: 0
   player_script: {fileID: 0}
   game_runner_script: {fileID: 0}
 --- !u!1 &1850246980 stripped
@@ -6487,8 +6479,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1961215314}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12, y: 0, z: 2.106824}
-  m_LocalScale: {x: 2, y: 1, z: 2.5}
+  m_LocalPosition: {x: 12, y: 0, z: -3.97}
+  m_LocalScale: {x: 2, y: 1, z: 1.8285669}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5

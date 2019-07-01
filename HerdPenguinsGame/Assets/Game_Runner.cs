@@ -12,30 +12,24 @@ public class Game_Runner : MonoBehaviour
         {
             GameObject p = GameObject.Instantiate(g); //instantiates penguin
             p.name = "Penguin_" + i; //names the penguin object based on its number
-        
-            /*
-             * places all of the penguins in random start locations in the game area, ensures they
+
+            /* places all of the penguins in random start locations in the game area, ensures they
              * won't spawn in a location outside of view
-             */ 
-            float y_val = Random.Range(1.0f, 1.5f);
+             */
+            float x_val = Random.Range(-12.0f, 1.0f);
+            float y_val = Random.Range(1.0f, 2.0f);
             float z_val;
-            float x_val;
 
             int rand_track = Random.Range(1, 3);
 
-            if (rand_track == 3)
-            {
+            if (rand_track == 3) {
                 z_val = -3.0f;
-                x_val = Random.Range(-11.5f, 1.3f);
             }
             else if(rand_track == 2) {
                 z_val = -5.0f;
-                x_val = Random.Range(-11.5f, 1.3f);
             }
-            else
-            {
+            else {
                 z_val = -7.0f;
-                x_val = Random.Range(-11.5f, 1.3f);
             }
 
             p.GetComponent<Rigidbody>().transform.position = new Vector3(x_val, y_val, z_val);
@@ -43,7 +37,8 @@ public class Game_Runner : MonoBehaviour
     }
 
     /*
-     * Decrements the count of the number of penguins
+     * Decrements the count of the number of penguins currently outside of the snow
+     * enclosure
      */ 
     public void Decrement_Num_Penguins()
     {
@@ -59,22 +54,4 @@ public class Game_Runner : MonoBehaviour
     {
         return num_penguins;
     }
-
-    //public int Get_Num_Penguins_In_Pen()
-    //{
-    //    int in_pen_count = 0;
-    //    for(int i = 0; i < num_penguins; i++)
-    //    {
-    //        GameObject this_penguin = GameObject.Find("Penguin_" + i);
-    //        Rigidbody this_penguin_rigidbody = this_penguin.GetComponent<Rigidbody>();
-
-    //        var x_pos = this_penguin_rigidbody.position.x;
-    //        if(x_pos <= 1.5)
-    //        {
-    //            in_pen_count++;
-    //        }
-    //    }
-
-    //    return in_pen_count;
-    //}
 }
