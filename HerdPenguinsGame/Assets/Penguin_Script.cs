@@ -244,6 +244,19 @@ public class Penguin_Script : MonoBehaviour
             Bounce(300.0f, 4.0f, 0.0f);
         }
 
+        /* Collision with the right wall:
+         * there is an invisible wall on the right of the playing area so that penguins
+         * never leave the scene
+         */
+        if (collision.gameObject.name == "Wall_Right")
+        {
+            /* penguin is moved to the third track so that it can bounce back without being interrupted by
+             * the player
+             */
+            penguin.transform.position = new Vector3(transform.position.x - 2.0f, transform.position.y, -3.0f);
+            Bounce(-300.0f, 4.0f, 0.0f);
+        }
+
         /* Collision with the player:
          */
         if (collision.gameObject.name == "Player")
